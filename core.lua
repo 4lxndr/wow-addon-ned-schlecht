@@ -75,6 +75,11 @@ if CreateFrame then
     local MEDIA_PATH = "Interface\\AddOns\\" .. ADDON .. "\\media\\"
     local db
 
+    local chatFiles = {}
+    for _, s in ipairs(BKS_SOUNDS) do
+        if s.chat then chatFiles[s.file] = true end
+    end
+
     local function playFile(file)
         return PlaySoundFile(MEDIA_PATH .. file, "Master")
     end
@@ -87,7 +92,11 @@ if CreateFrame then
             DEFAULT_CHAT_FRAME:AddMessage(msg, 1, 0.4, 0.4)
         end,
         isEnabled = function(file)
-            return not (db and db.disabled[file])
+            if not db then return true end
+            if db.disabled[file] then return false end
+            -- chat variants only play when the chat toggle is on (default: off)
+            if chatFiles[file] and not db.chatEnabled then return false end
+            return true
         end,
     })
 
@@ -99,6 +108,7 @@ if CreateFrame then
             if ... == ADDON then
                 NedSchlechtBossSoundsDB = NedSchlechtBossSoundsDB or {}
                 NedSchlechtBossSoundsDB.disabled = NedSchlechtBossSoundsDB.disabled or {}
+                NedSchlechtBossSoundsDB.chatEnabled = NedSchlechtBossSoundsDB.chatEnabled or false
                 db = NedSchlechtBossSoundsDB
                 if BKS_SetupOptions then
                     BKS_SetupOptions(core, db, playFile)

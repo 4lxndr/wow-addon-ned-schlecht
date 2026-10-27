@@ -9,9 +9,12 @@ inspiriert von Brudivoeller_TV (Twitch).
 
 - **Boss-Kill-Erkennung** über das `ENCOUNTER_END`-Event: löst bei jedem
   erfolgreich beendeten Dungeon-/Raid-Encounter aus, bei Wipes bleibt es still.
-- **7 Sounds im Pool**, alle auf einheitliche Lautstärke (−12 LUFS) gemastert:
-  Chat Original, NNN Flüssig, NNN Chat Flüssig, Stadion Panorama,
-  Chat Stadion Panorama, Dub Echo Bounce, Chat Dub Echo Bounce.
+- **9 Sounds im Pool**, alle auf einheitliche Lautstärke (−12 LUFS) gemastert:
+  Original, NNN Flüssig, Stadion Panorama, Dub Echo Bounce, Echo sowie vier
+  Chat-Varianten (Chat Original, NNN Chat Flüssig, Chat Stadion Panorama,
+  Chat Dub Echo Bounce).
+- **Chat-Ansagen-Schalter:** Die Chat-Varianten sind standardmäßig aus und
+  lassen sich im Optionsmenü global zuschalten.
 - **Shuffle-Wiedergabe:** Jeder aktivierte Sound kommt genau einmal pro Runde
   dran, danach wird neu gemischt — nie derselbe Sound zweimal hintereinander.
 - **Optionsmenü** (ESC → Optionen → AddOns): pro Sound eine Checkbox zum

@@ -150,6 +150,7 @@ dofile(root .. "core.lua") -- CreateFrame exists now → bootstrap runs
 env.FireEvent("ADDON_LOADED", "NedSchlechtBossSounds")
 check(type(NedSchlechtBossSoundsDB) == "table" and type(NedSchlechtBossSoundsDB.disabled) == "table",
     "ADDON_LOADED initializes saved variables")
+check(NedSchlechtBossSoundsDB.chatEnabled == false, "chat toggle defaults to off")
 check(type(BKS_OpenOptions) == "function", "options panel registered")
 
 env.FireEvent("ENCOUNTER_END", 672, "Testboss", 9, 40, 1)
@@ -160,22 +161,54 @@ check(#env.playedFiles > 0 and env.playedFiles[1].path:find("Interface\\AddOns\\
 env.FireEvent("ENCOUNTER_END", 672, "Testboss", 9, 40, 0)
 check(#env.playedFiles == 1, "ENCOUNTER_END(success=0) plays nothing")
 
+-- helper: does a played path contain one of the chat variant files?
+local chatFiles = {}
+for _, s in ipairs(BKS_SOUNDS) do
+    if s.chat then chatFiles[s.file] = true end
+end
+local function playedChatIn(from)
+    for i = from, #env.playedFiles do
+        for file in pairs(chatFiles) do
+            if env.playedFiles[i].path:find(file, 1, true) then return true end
+        end
+    end
+    return false
+end
+
 -- 12) sounds disabled via saved variables do not play in-game either
 NedSchlechtBossSoundsDB.disabled = {}
-for i = 1, #BKS_SOUNDS - 1 do
-    NedSchlechtBossSoundsDB.disabled[BKS_SOUNDS[i].file] = true
+local keepFile
+for _, s in ipairs(BKS_SOUNDS) do
+    if not s.chat then keepFile = s.file end
 end
-local onlyLast = BKS_SOUNDS[#BKS_SOUNDS].file
+for _, s in ipairs(BKS_SOUNDS) do
+    if not s.chat and s.file ~= keepFile then
+        NedSchlechtBossSoundsDB.disabled[s.file] = true
+    end
+end
 local before = #env.playedFiles
 for _ = 1, 5 do env.FireEvent("ENCOUNTER_END", 672, "Testboss", 9, 40, 1) end
-local allLast = true
+local allKept = true
 for i = before + 1, #env.playedFiles do
-    if not env.playedFiles[i].path:find(onlyLast, 1, true) then allLast = false end
+    if not env.playedFiles[i].path:find(keepFile, 1, true) then allKept = false end
 end
-check(#env.playedFiles == before + 5 and allLast, "saved-variables disable works in-game")
+check(#env.playedFiles == before + 5 and allKept, "saved-variables disable works in-game")
 NedSchlechtBossSoundsDB.disabled = {}
 
--- 13) no slash commands: configuration happens through the options menu only
+-- 13) chat variants stay silent while the chat toggle is off (default)
+before = #env.playedFiles
+for _ = 1, 20 do env.FireEvent("ENCOUNTER_END", 672, "Testboss", 9, 40, 1) end
+check(#env.playedFiles == before + 20 and not playedChatIn(before + 1),
+    "chat variants silent while toggle is off")
+
+-- 14) enabling the chat toggle lets chat variants play
+NedSchlechtBossSoundsDB.chatEnabled = true
+before = #env.playedFiles
+for _ = 1, 27 do env.FireEvent("ENCOUNTER_END", 672, "Testboss", 9, 40, 1) end
+check(playedChatIn(before + 1), "chat variants play once the toggle is on")
+NedSchlechtBossSoundsDB.chatEnabled = false
+
+-- 15) no slash commands: configuration happens through the options menu only
 check(SlashCmdList["NEDSCHLECHT"] == nil, "no slash commands registered")
 
 print(string.format("\n%d passed, %d failed", passed, failed))
