@@ -1,0 +1,7 @@
+package-as: NedSchlechtBossSounds
+
+manual-changelog: CHANGELOG.md
+
+ignore:
+    - tests
+    - docs

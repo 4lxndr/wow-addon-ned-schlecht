@@ -1,0 +1,11 @@
+## Interface: 11509
+## Title: NedSchlechtBossSounds
+## Notes: Spielt bei jedem Boss-Kill "Brudi ned schlecht!" — inspiriert von Brudivoeller_TV (Twitch).
+## Version: 1.0.0
+## Author: alexa
+## IconTexture: Interface\AddOns\NedSchlechtBossSounds\media\icon
+## SavedVariables: NedSchlechtBossSoundsDB
+
+sounds.lua
+options.lua
+core.lua
